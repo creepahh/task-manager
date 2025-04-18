@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // <-- for navigation
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
 const Register = () => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
-    const navigate = useNavigate(); // <-- initialize navigate
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -17,7 +17,7 @@ const Register = () => {
         try {
             const response = await api.register(formData);
             console.log('Registration successful', response);
-            navigate('/login'); // <-- redirect to login page
+            navigate('/login');
         } catch (err) {
             console.error(err);
             setError('Registration failed. Try a different email.');

@@ -1,4 +1,3 @@
-// src/components/Login.js
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
@@ -11,15 +10,16 @@ const Login = ({ setToken }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        setError(''); // Clear error on input change
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const data = await api.login(formData); // sends email & password
+            const data = await api.login(formData);
             localStorage.setItem('token', data.token); // store token
-            setToken(data.token); // update token in App.js
-            navigate('/'); // redirect to dashboard
+            setToken(data.token);
+            navigate('/dashboard');
         } catch (err) {
             console.error(err);
             setError('Login failed. Check your credentials.');

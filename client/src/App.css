@@ -1,38 +1,187 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff0f5;
+  color: #333;
+  line-height: 1.6;
+}
+
 .App {
   text-align: center;
+  padding: 2rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
+/* HEADER */
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background-color: #ffb6c1;
+  padding: 1.5rem;
   color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* FORMS */
+form, .form-box {
+  background-color: #ffe4ec;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  margin: 1rem auto;
+  width: 100%;
+  max-width: 400px;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  margin: 0.5rem 0 1rem 0;
+  border: 1px solid #ffb6c1;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* BUTTONS */
+button {
+  background-color: #ff69b4;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button:disabled {
+  background-color: #f3a7c0;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background-color: #ff1493;
+}
+
+/* TASKS LIST */
+.task-list {
+  margin-top: 2rem;
+  list-style: none;
+  padding: 0;
+}
+
+.task-card {
+  background-color: #fff;
+  border-left: 5px solid #ff69b4;
+  margin: 1rem auto;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(255, 182, 193, 0.2);
+  max-width: 500px;
+  text-align: left;
+  position: relative;
+}
+.task-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.task-item {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+.task-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.task-card p {
+  margin: 0.5rem 0;
+  color: #555;
+}
+
+.task-card .task-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-card .task-actions button {
+  background-color: transparent;
+  color: #ff1493;
+  font-size: 1.2rem;
+  border: none;
+  cursor: pointer;
+}
+
+.task-card .task-actions button:hover {
+  color: #dc143c;
+}
+
+/* ERROR AND LOADING STATES */
+.error {
+  color: red;
+  margin: 1rem 0;
+}
+
+.dashboard .task-list {
+  margin-top: 2rem;
+  padding: 0;
+}
+
+/* LINKS */
 .App-link {
-  color: #61dafb;
+  color: #ff69b4;
+  text-decoration: none;
+}
+/* 
+table ui updated styles */
+
+.task-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.task-table th,
+.task-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
+
+.task-table th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+}
+
+.task-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.task-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.task-table button {
+  margin-right: 5px;
+}
+

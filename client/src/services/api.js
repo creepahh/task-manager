@@ -30,8 +30,8 @@ const addTask = async (taskData, token) => {
     return response.data;
 };
 
-const deleteTask = async (taskId, token) => {
-    const response = await axios.delete(`${API_URL}/tasks/${taskId}`, {
+const updateTask = async (taskId, taskData, token) => {
+    const response = await axios.put(`${API_URL}/tasks/${taskId}`, taskData, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -39,12 +39,29 @@ const deleteTask = async (taskId, token) => {
     return response.data;
 };
 
+const deleteTask = async (taskId, token) => {
+    try {
+        const response = await axios.delete(`${API_URL}/tasks/${taskId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        return response.data;
+    } catch {
+        console.log('Error deleting task:');
+    }
+
+};
+
+
 // Assigning the object to a variable before exporting
 const api = {
     register,
     login,
     getTasks,
     addTask,
+    updateTask,
     deleteTask,
 };
 
