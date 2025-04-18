@@ -1,10 +1,12 @@
-// src/components/Register.js
+// src/components/Login.js
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 
-const Register = () => {
+const Login = ({ setToken }) => {
     const [formData, setFormData] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -14,16 +16,19 @@ const Register = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.register(formData);
-            console.log('Registration successful', response);
+            const data = await api.login(formData); // sends email & password
+            localStorage.setItem('token', data.token); // store token
+            setToken(data.token); // update token in App.js
+            navigate('/'); // redirect to dashboard
         } catch (err) {
-            setError('Registration failed');
+            console.error(err);
+            setError('Login failed. Check your credentials.');
         }
     };
 
     return (
         <div>
-            <h2>Register</h2>
+            <h2>Login</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -33,6 +38,7 @@ const Register = () => {
                     placeholder="Email"
                     required
                 />
+                <br />
                 <input
                     type="password"
                     name="password"
@@ -41,11 +47,12 @@ const Register = () => {
                     placeholder="Password"
                     required
                 />
-                <button type="submit">Register</button>
+                <br />
+                <button type="submit">Login</button>
             </form>
-            {error && <p>{error}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };
 
-export default Register;
+export default Login;
