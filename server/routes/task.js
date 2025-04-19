@@ -24,7 +24,8 @@ router.post('/', verifyToken, async (req, res) => {
     }
 
     try {
-        const task = await Task.create({ title, description, userId: req.user.id });
+        console.log('User ID:', req.user.id); // Log the user ID
+        const task = await Task.create({ title, description, UserId: req.user.id });
         res.status(201).json({ task });
     } catch (err) {
         console.error(err);
@@ -37,41 +38,36 @@ router.put('/:taskId', verifyToken, async (req, res) => {
     const { taskId } = req.params;
     const { title, description } = req.body;
 
-    if (!title && !description) {
-        return res.status(400).json({ message: 'At least one field (title or description) is required to update.' });
-    }
-
     try {
-        const task = await Task.findOne({ where: { id: taskId, userId: req.user.id } });
+        const task = await Task.findOne({ where: { id: taskId } });
         if (!task) {
             return res.status(404).json({ message: 'Task not found.' });
         }
-        task.title = title || task.title;
-        task.description = description || task.description;
-        await task.save();
 
-        res.json({ task });
+        if (title) task.title = title;
+        if (description) task.description = description;
+
+        await task.save();
+        res.status(200).json({ message: 'Task updated successfully.', task });
     } catch (err) {
-        console.error(err);
+        console.error('Error updating task:', err);
         res.status(500).json({ message: 'Failed to update task.' });
     }
 });
+
 
 //delete
 router.delete('/:taskId', verifyToken, async (req, res) => {
     const { taskId } = req.params;
 
     try {
-        console.log('Attempting to delete task with ID:', taskId); // Debug log
         const task = await Task.findOne({ where: { id: taskId, userId: req.user.id } });
         if (!task) {
-            console.log('Task not found for ID:', taskId, 'and User ID:', req.user.id); //  log
             return res.status(404).json({ message: 'Task not found.' });
         }
 
         await task.destroy();
-        console.log('Task deleted successfully:', taskId); // justlog
-        res.json({ message: 'Task deleted successfully.' });
+        res.status(200).json({ message: 'Task deleted successfully.' });
     } catch (err) {
         console.error('Error deleting task:', err);
         res.status(500).json({ message: 'Failed to delete task.' });

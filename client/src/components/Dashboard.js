@@ -6,7 +6,7 @@ import '../App.css';
 const Dashboard = ({ token }) => {
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState({ title: '', description: '' });
-    const [editingTaskId, setEditingTaskId] = useState(null); // Track the task being edited
+    const [editingTaskId, setEditingTaskId] = useState(null); // task being edited
     const [error, setError] = useState('');
     const [loadingTasks, setLoadingTasks] = useState(false);
     const [loadingAddTask, setLoadingAddTask] = useState(false);
@@ -86,17 +86,10 @@ const Dashboard = ({ token }) => {
     };
 
     const handleDeleteTask = async (taskId) => {
-        if (!window.confirm('Are you sure you want to delete this task?')) {
-            return;
-        }
-        console.log('Deleting Task ID:', taskId);
-        setDeletingTaskId(taskId); // task ID being deleted
         try {
-            console.log(`URL:${API_URL}/tasks/${taskId}`); // just log
-            console.log('Token:', token); // just log
-            const response = await api.deleteTask(taskId, token);
-            console.log('Delete Response:', response);
-            setTasks(tasks.filter((task) => task.id !== taskId));
+            setDeletingTaskId(taskId);
+            await api.deleteTask(taskId, token);
+            setTasks(tasks.filter((task) => task.id !== taskId)); //removed from the state
         } catch (err) {
             console.error('Error deleting task:', err);
             setError('Failed to delete task. Please try again later.');

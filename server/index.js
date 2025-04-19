@@ -4,7 +4,6 @@ const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const task = require('./routes/task');
 
-
 const sequelize = require('./config/db');
 const User = require('./models/User');
 const Task = require('./models/Task');

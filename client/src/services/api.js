@@ -40,18 +40,14 @@ const updateTask = async (taskId, taskData, token) => {
 };
 
 const deleteTask = async (taskId, token) => {
-    try {
-        const response = await axios.delete(`${API_URL}/tasks/${taskId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-
-        return response.data;
-    } catch {
-        console.log('Error deleting task:');
-    }
-
+    // console.log('API Delete Task ID:', taskId);
+    // console.log('API Token:', token);
+    const response = await axios.delete(`${API_URL}/tasks/${taskId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
 };
 
 
