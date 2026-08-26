@@ -1,24 +1,41 @@
 import React from 'react';
 
-const TaskList = ({ tasks, handleEdit, handleDelete }) => {
+const TaskList = ({ tasks, handleEdit, handleDelete, deletingTaskId }) => {
     if (!tasks || tasks.length === 0) {
-        return <div className="empty-state">No tasks available</div>;
+        return (
+            <div className="empty-state">
+                <div className="empty-icon">&#128203;</div>
+                <p>No tasks yet. Add one above to get started.</p>
+            </div>
+        );
     }
 
     return (
-        <div>
-            <h2>Your Tasks</h2>
-            <ul className="task-list">
-                {tasks.map((task) => (
-                    <li key={task.id} className="task-item">
-                        <h3>{task.name}</h3>
-                        <p>{task.description}</p>
-                        <button onClick={() => handleEdit(task.id)}>Edit</button>
-                        <button onClick={() => handleDelete(task.id)}>Delete</button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <ul className="task-list">
+            {tasks.map((task) => (
+                <li key={task.id} className="task-card">
+                    <div className="task-card-header">
+                        <h3>{task.title}</h3>
+                        <div className="task-card-actions">
+                            <button
+                                className="btn btn-ghost btn-icon"
+                                onClick={() => handleEdit(task.id)}
+                            >
+                                Edit
+                            </button>
+                            <button
+                                className="btn btn-danger-ghost btn-icon"
+                                onClick={() => handleDelete(task.id)}
+                                disabled={deletingTaskId === task.id}
+                            >
+                                {deletingTaskId === task.id ? '...' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
+                    <p>{task.description}</p>
+                </li>
+            ))}
+        </ul>
     );
 };
 

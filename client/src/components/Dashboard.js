@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
-import '../App.css';
 
 const Dashboard = ({ token }) => {
     const [tasks, setTasks] = useState([]);
     const [task, setTask] = useState({ title: '', description: '' });
-    const [editingTaskId, setEditingTaskId] = useState(null); // task being edited
+    const [editingTaskId, setEditingTaskId] = useState(null);
     const [error, setError] = useState('');
     const [loadingTasks, setLoadingTasks] = useState(false);
-    const [loadingAddTask, setLoadingAddTask] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
     const [deletingTaskId, setDeletingTaskId] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
         if (!token) {
-            navigate('/login'); // Redirect to login if no token
+            navigate('/login');
             return;
         }
 
         const fetchTasks = async () => {
             setLoadingTasks(true);
-            setError(''); //  previous error messages
+            setError('');
             try {
                 const response = await api.getTasks(token);
                 setTasks(response.tasks || []);
@@ -29,8 +28,8 @@ const Dashboard = ({ token }) => {
                 console.error('Error fetching tasks:', err);
                 if (err.response && err.response.status === 401) {
                     setError('Your session has expired. Please log in again.');
-                    localStorage.removeItem('token'); // remove token from localStorage
-                    navigate('/login'); // 
+                    localStorage.removeItem('token');
+                    navigate('/login');
                 } else {
                     setError('Failed to fetch tasks. Please try again later.');
                 }
@@ -47,10 +46,10 @@ const Dashboard = ({ token }) => {
             setError('Please fill in both the title and description.');
             return;
         }
-        setError(''); // Clear error before making the request
+        setError('');
 
         try {
-            setLoadingAddTask(true);
+            setSubmitting(true);
 
             if (editingTaskId) {
                 await api.updateTask(editingTaskId, task, token);
@@ -59,94 +58,131 @@ const Dashboard = ({ token }) => {
                         t.id === editingTaskId ? { ...t, title: task.title, description: task.description } : t
                     )
                 );
-                setEditingTaskId(null); // Clear editing state
+                setEditingTaskId(null);
             } else {
-
                 const newTask = await api.addTask(task, token);
                 setTasks([...tasks, newTask.task]);
             }
 
-            setTask({ title: '', description: '' }); // Clear the form
+            setTask({ title: '', description: '' });
         } catch (err) {
             setError('Failed to save task. Please try again later.');
         } finally {
-            setLoadingAddTask(false);
+            setSubmitting(false);
         }
     };
 
     const handleEditTask = (taskId) => {
-        console.log('Editing Task ID:', taskId); // just log
-        const taskToEdit = tasks.find((task) => task.id === taskId);
+        const taskToEdit = tasks.find((t) => t.id === taskId);
         if (!taskToEdit) {
             setError('Task not found in the current list.');
             return;
         }
         setTask({ title: taskToEdit.title, description: taskToEdit.description });
-        setEditingTaskId(taskId); // task ID being edited
+        setEditingTaskId(taskId);
+        setError('');
+    };
+
+    const handleCancelEdit = () => {
+        setEditingTaskId(null);
+        setTask({ title: '', description: '' });
     };
 
     const handleDeleteTask = async (taskId) => {
         try {
             setDeletingTaskId(taskId);
             await api.deleteTask(taskId, token);
-            setTasks(tasks.filter((task) => task.id !== taskId)); //removed from the state
+            setTasks(tasks.filter((t) => t.id !== taskId));
         } catch (err) {
             console.error('Error deleting task:', err);
             setError('Failed to delete task. Please try again later.');
         } finally {
-            setDeletingTaskId(null); // Clear the deleting task ID
+            setDeletingTaskId(null);
         }
     };
 
     return (
-        <div className="dashboard">
-            <h2>Your Tasks</h2>
-            {error && <p className="error">{error}</p>}
-            {!token ? (
-                <p>Please log in to manage your tasks.</p>
-            ) : (
-                <>
-                    <div className="form-box">
-                        <input
-                            type="text"
-                            value={task.title}
-                            onChange={(e) => setTask({ ...task, title: e.target.value })}
-                            placeholder="Task Title"
-                        />
-                        <textarea
-                            value={task.description}
-                            onChange={(e) => setTask({ ...task, description: e.target.value })}
-                            placeholder="Task Description"
-                        />
-                        <button
-                            onClick={handleAddOrUpdateTask}
-                            disabled={loadingAddTask || !task.title || !task.description}
-                        >
-                            {editingTaskId ? (loadingAddTask ? 'Saving...' : 'Save') : (loadingAddTask ? 'Adding...' : 'Add Task')}
+        <div>
+            <div className="dashboard-header">
+                <h2>My Tasks</h2>
+            </div>
+
+            {error && <div className="error">{error}</div>}
+
+            <div className="task-form-card">
+                <h3>{editingTaskId ? 'Edit task' : 'New task'}</h3>
+                <div className="form-group">
+                    <label htmlFor="task-title">Title</label>
+                    <input
+                        id="task-title"
+                        type="text"
+                        value={task.title}
+                        onChange={(e) => setTask({ ...task, title: e.target.value })}
+                        placeholder="What needs to be done?"
+                    />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="task-desc">Description</label>
+                    <textarea
+                        id="task-desc"
+                        value={task.description}
+                        onChange={(e) => setTask({ ...task, description: e.target.value })}
+                        placeholder="Add some details..."
+                    />
+                </div>
+                <div className="task-form-actions">
+                    <button
+                        className="btn btn-primary"
+                        onClick={handleAddOrUpdateTask}
+                        disabled={submitting || !task.title || !task.description}
+                    >
+                        {submitting
+                            ? 'Saving...'
+                            : editingTaskId
+                                ? 'Save changes'
+                                : 'Add task'}
+                    </button>
+                    {editingTaskId && (
+                        <button className="btn btn-outline" onClick={handleCancelEdit}>
+                            Cancel
                         </button>
-                    </div>
-                    {loadingTasks ? (
-                        <p>Loading tasks...</p>
-                    ) : tasks.length === 0 ? (
-                        <div className="empty-state">No tasks available</div>
-                    ) : (
-                        <ul className="task-list">
-                            {tasks.map((task) => (
-                                <li key={task.id} className="task-item">
-                                    <h3>{task.title}</h3>
-                                    <p>{task.description}</p>
-                                    <button onClick={() => handleEditTask(task.id)}>Edit</button>
-                                    <button
-                                        onClick={() => handleDeleteTask(task.id)}
-                                        disabled={deletingTaskId === task.id}
-                                    >
-                                        {deletingTaskId === task.id ? 'Deleting...' : 'Delete'}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
                     )}
-                </>
+                </div>
+            </div>
+
+            {loadingTasks ? (
+                <div className="loading">Loading tasks...</div>
+            ) : tasks.length === 0 ? (
+                <div className="empty-state">
+                    <div className="empty-icon">&#128203;</div>
+                    <p>No tasks yet. Add one above to get started.</p>
+                </div>
+            ) : (
+                <ul className="task-list">
+                    {tasks.map((t) => (
+                        <li key={t.id} className="task-card">
+                            <div className="task-card-header">
+                                <h3>{t.title}</h3>
+                                <div className="task-card-actions">
+                                    <button
+                                        className="btn btn-ghost btn-icon"
+                                        onClick={() => handleEditTask(t.id)}
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        className="btn btn-danger-ghost btn-icon"
+                                        onClick={() => handleDeleteTask(t.id)}
+                                        disabled={deletingTaskId === t.id}
+                                    >
+                                        {deletingTaskId === t.id ? '...' : 'Delete'}
+                                    </button>
+                                </div>
+                            </div>
+                            <p>{t.description}</p>
+                        </li>
+                    ))}
+                </ul>
             )}
         </div>
     );

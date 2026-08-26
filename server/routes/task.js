@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const tasks = await Task.findAll({ where: { userId: req.user.id } });
+        const tasks = await Task.findAll({ where: { UserId: req.user.id } });
         res.json({ tasks });
     } catch (err) {
         console.error(err);
@@ -39,7 +39,7 @@ router.put('/:taskId', verifyToken, async (req, res) => {
     const { title, description } = req.body;
 
     try {
-        const task = await Task.findOne({ where: { id: taskId } });
+        const task = await Task.findOne({ where: { id: taskId, UserId: req.user.id } });
         if (!task) {
             return res.status(404).json({ message: 'Task not found.' });
         }
@@ -61,7 +61,7 @@ router.delete('/:taskId', verifyToken, async (req, res) => {
     const { taskId } = req.params;
 
     try {
-        const task = await Task.findOne({ where: { id: taskId, userId: req.user.id } });
+        const task = await Task.findOne({ where: { id: taskId, UserId: req.user.id } });
         if (!task) {
             return res.status(404).json({ message: 'Task not found.' });
         }

@@ -1,54 +1,106 @@
-# Task Manager App 📝
+# Task Manager
 
-A full-stack task management application where users can register, log in, and manage their tasks. Built with React, Node.js, Express, and MySQL.
+A full-stack task management application. Users can register, log in, and manage their personal tasks with full CRUD operations.
 
----
+## Tech Stack
 
-## 🚀 Features
+- **Client:** React, Axios, React Router
+- **Server:** Node.js, Express
+- **Database:** MySQL (Sequelize ORM)
+- **Auth:** JWT (JSON Web Tokens), bcrypt
 
-- User registration & login with JWT authentication
-- Create, update, delete, and view tasks
-- Separate frontend and backend
-- RESTful API
+## Project Structure
 
----
+```
+task-manager/
+├── client/                 # React frontend
+│   └── src/
+│       ├── components/     # Login, Register, Dashboard, TaskList
+│       └── services/       # API client (api.js)
+├── server/                 # Express backend
+│   ├── config/             # Database connection
+│   ├── middleware/          # JWT verification
+│   ├── models/             # Sequelize models (User, Task)
+│   └── routes/             # Auth and task routes
+```
 
-## 🛠️ Tech Stack
+## Getting Started
 
-Frontend: React (with Axios for API calls)
-Backend: Node.js, Express.js
-Database: MySQL
-Authentication: JSON Web Tokens (JWT)
-ORM: Sequelize
+### Prerequisites
 
----
+- Node.js (v16+)
+- MySQL
 
-## 📦 Installation
+### 1. Clone the repo
 
-1. Clone the repository
-
+```bash
 git clone https://github.com/creepahh/task-manager.git
 cd task-manager
+```
 
-2. Install dependencies
-Backend (Express server)
+### 2. Install dependencies
+
+```bash
+# Server
 cd server
 npm install
 
-Frontend (React app)
+# Client
 cd ../client
 npm install
+```
 
-3. Configure environment variables
-4. Run the app locally
+### 3. Set up environment variables
+
+Create a `.env` file in `server/`:
+
+```env
+DB_NAME=task_manager
+DB_USER=root
+DB_PASS=yourpassword
+DB_HOST=localhost
+JWT_SECRET=your-secret-key
+PORT=5000
+```
+
+Create a `.env` file in `client/`:
+
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+```
+
+### 4. Run the app
+
 Start the backend:
 
+```bash
 cd server
 npm run dev
+```
 
-Start the frontend:
+Start the frontend (in a separate terminal):
 
-cd ../client
+```bash
+cd client
 npm start
+```
 
+The app will be available at `http://localhost:3000`.
 
+## API Endpoints
+
+### Auth
+
+| Method | Endpoint       | Description          | Body                        |
+|--------|----------------|----------------------|-----------------------------|
+| POST   | `/api/register`| Register a new user  | `{ email, password }`       |
+| POST   | `/api/login`   | Log in               | `{ email, password }`       |
+
+### Tasks (requires `Authorization: Bearer <token>`)
+
+| Method | Endpoint           | Description    | Body                     |
+|--------|--------------------|----------------|--------------------------|
+| GET    | `/api/tasks`       | Get all tasks  | —                        |
+| POST   | `/api/tasks`       | Create a task  | `{ title, description }` |
+| PUT    | `/api/tasks/:id`   | Update a task  | `{ title, description }` |
+| DELETE | `/api/tasks/:id`   | Delete a task  | —                        |
